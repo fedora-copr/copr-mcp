@@ -11,16 +11,36 @@ from copr.v3 import Client
 
 class Project(BaseModel):
     id: int
+    web_url: str
     ownername: str
     name: str
     full_name: str
-    web_url: str
 
 
 class BuildStatus(BaseModel):
     id: int
     state: str
     name: str | None = None
+
+
+class Build(BaseModel):
+    id: int
+    web_url: str
+    state: str
+    submitter: str
+
+
+class BuildFromDistGit(BaseModel):
+    packagename: str
+    namespace: str | None = None
+
+
+class BuildFromPyPI(BaseModel):
+    packagename: str
+    spec_template: str | None = None
+
+
+BuildSource = BuildFromDistGit | BuildFromPyPI
 
 
 logging.basicConfig(level=logging.WARNING)
@@ -51,10 +71,10 @@ def copr_create_project(
 
     return Project(
         id=project.id,
+        web_url=web_url,
         ownername=project.ownername,
         name=project.name,
         full_name=project.full_name,
-        web_url=web_url,
     )
 
 
@@ -113,11 +133,54 @@ def copr_list_builds(ownername: str, projectname: str) -> list[BuildStatus]:
     ]
 
 
+def copr_submit_build(
+    ownername: str,
+    projectname: str,
+    source: BuildSource,
+) -> Build:
+    """
+    Submit a new build into a Copr project defined by its ownername and
+    projectname. Copr supports multiple source types, see the documentation
+    https://docs.copr.fedorainfracloud.org/user_documentation.html#build-source-types
+    """
+    client = Client.create_from_config_file()
+    match source:
+        case BuildFromDistGit():
+            build = client.build_proxy.create_from_distgit(
+                ownername,
+                projectname,
+                source.packagename,
+                namespace=source.namespace,
+
+            )
+        case BuildFromPyPI():
+            build = client.build_proxy.create_from_pypi(
+                ownername,
+                projectname,
+                source.packagename,
+                spec_template=source.spec_template,
+            )
+
+    web_url = "/".join([
+        client.config["copr_url"].strip("/"),
+        "coprs/build",
+        str(build.id),
+    ])
+
+    return Build(
+        id=build.id,
+        web_url=web_url,
+        state=build.state,
+        submitter=build.submitter,
+    )
+
+
 def run_mcp(args):
     mcp = FastMCP("copr-ai")
     mcp.add_tool(copr_build_status)
     mcp.add_tool(copr_list_builds)
     mcp.add_tool(copr_create_project)
+    mcp.add_tool(copr_submit_build)
     mcp.run()
 
 
@@ -132,6 +195,7 @@ def run_prompt(args):
     agent.tool_plain(copr_build_status)
     agent.tool_plain(copr_list_builds)
     agent.tool_plain(copr_create_project)
+    agent.tool_plain(copr_submit_build)
 
     result = agent.run_sync(args.prompt)
     print(result.output)
