@@ -1,9 +1,11 @@
+import argparse
 import json
 import logging
 import subprocess
 
 from pydantic import BaseModel
 from pydantic_ai import Agent
+from mcp.server.fastmcp import FastMCP
 
 
 class BuildStatus(BaseModel):
@@ -17,13 +19,6 @@ log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
 
 
-agent = Agent(
-    "anthropic:claude-opus-4-6",
-    instructions="You help manage Copr builds. Use tools to get real information.",
-)
-
-
-@agent.tool_plain
 def copr_build_status(build_id: int) -> BuildStatus:
     """
     Get the status of a Copr build by its ID.
@@ -44,7 +39,6 @@ def copr_build_status(build_id: int) -> BuildStatus:
     )
 
 
-@agent.tool_plain
 def copr_list_builds(ownername: str, projectname: str) -> list[BuildStatus]:
     """
     Get the status of all builds in a Copr project identified by its
@@ -80,10 +74,46 @@ def copr_list_builds(ownername: str, projectname: str) -> list[BuildStatus]:
     ]
 
 
-def main():
-    prompt = input("Ask about your Copr builds: ")
-    result = agent.run_sync(prompt)
+def run_mcp(args):
+    mcp = FastMCP("copr-ai")
+    mcp.add_tool(copr_build_status)
+    mcp.add_tool(copr_list_builds)
+    mcp.run()
+
+
+def run_prompt(args):
+    instructions = (
+        "You help manage Copr builds. Use tools to get real information.",
+    )
+    agent = Agent(
+        "anthropic:claude-opus-4-6",
+        instructions=instructions,
+    )
+    agent.tool_plain(copr_build_status)
+    agent.tool_plain(copr_list_builds)
+
+    result = agent.run_sync(args.prompt)
     print(result.output)
+
+
+def main():
+    parser = argparse.ArgumentParser(description="Copr AI assistant")
+    group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument(
+        "--mcp",
+        action="store_true",
+        help="Run as MCP server",
+    )
+    group.add_argument(
+        "--prompt",
+        help="Run as interactive CLI",
+    )
+    args = parser.parse_args()
+
+    if args.prompt:
+        run_prompt(args)
+    else:
+        run_mcp(args)
 
 
 if __name__ == "__main__":
