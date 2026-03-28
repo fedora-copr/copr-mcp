@@ -6,6 +6,15 @@ import subprocess
 from pydantic import BaseModel
 from pydantic_ai import Agent
 from mcp.server.fastmcp import FastMCP
+from copr.v3 import Client
+
+
+class Project(BaseModel):
+    id: int
+    ownername: str
+    name: str
+    full_name: str
+    web_url: str
 
 
 class BuildStatus(BaseModel):
@@ -17,6 +26,36 @@ class BuildStatus(BaseModel):
 logging.basicConfig(level=logging.WARNING)
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
+
+
+def copr_create_project(
+    ownername: str,
+    projectname: str,
+    chroots: list[str],
+) -> Project:
+    """
+    Create a Copr project with a given name for a specified owner.
+    When creating a new project, at least one chroot must be specified. For
+    example `fedora-rawhide-x86_64`
+    """
+    client = Client.create_from_config_file()
+    project = client.project_proxy.add(ownername, projectname, chroots)
+
+    # Taken from copr-cli action_create
+    # This should be either part of python-copr or returned by the API
+    owner_part = project.ownername.replace("@", "g/")
+    web_url = "/".join([
+        client.config["copr_url"].strip("/"),
+        "coprs", owner_part, project.name, "",
+    ])
+
+    return Project(
+        id=project.id,
+        ownername=project.ownername,
+        name=project.name,
+        full_name=project.full_name,
+        web_url=web_url,
+    )
 
 
 def copr_build_status(build_id: int) -> BuildStatus:
@@ -78,6 +117,7 @@ def run_mcp(args):
     mcp = FastMCP("copr-ai")
     mcp.add_tool(copr_build_status)
     mcp.add_tool(copr_list_builds)
+    mcp.add_tool(copr_create_project)
     mcp.run()
 
 
@@ -91,6 +131,7 @@ def run_prompt(args):
     )
     agent.tool_plain(copr_build_status)
     agent.tool_plain(copr_list_builds)
+    agent.tool_plain(copr_create_project)
 
     result = agent.run_sync(args.prompt)
     print(result.output)
