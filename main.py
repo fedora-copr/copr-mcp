@@ -147,7 +147,7 @@ def copr_submit_build(
 
 
 def run_mcp(args):
-    mcp = FastMCP("copr-ai")
+    mcp = FastMCP("copr-mcp")
     mcp.add_tool(copr_build_status)
     mcp.add_tool(copr_list_builds)
     mcp.add_tool(copr_create_project)

@@ -1,4 +1,4 @@
-# Copr AI
+# Copr MCP
 
 ## Prerequisites
 
@@ -28,8 +28,8 @@ uv run main.py --prompt "Tell me the status of Copr build 8101723"
 Register the MCP server
 
 ```
-claude mcp add copr-ai \
-    -- uv run --directory /home/jkadlcik/git/copr-ai python main.py --mcp
+claude mcp add copr-mcp \
+    -- uv run --directory /home/jkadlcik/git/copr-mcp python main.py --mcp
 ```
 
 Then create a new claude session and ask it questions like
@@ -40,5 +40,5 @@ Then create a new claude session and ask it questions like
 If you don't need this MCP server anymore, uninstall it.
 
 ```
-claude mcp remove copr-ai
+claude mcp remove copr-mcp
 ```

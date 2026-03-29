@@ -169,7 +169,7 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/0b/a5/38410bcef107fd37a0101a61d26166f208a472b8358e0f3f6a52acb46557/copr-2.5.tar.gz", hash = "sha256:2297abc2b6c39413364ce91164ac4ee90ce73d2fff5901185ae64a8bd8249b6c", size = 62529, upload-time = "2025-12-15T11:50:59.403Z" }
 
 [[package]]
-name = "copr-ai"
+name = "copr-mcp"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
