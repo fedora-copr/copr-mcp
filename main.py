@@ -1,5 +1,6 @@
 import argparse
 import logging
+from typing import Callable
 from pydantic import BaseModel
 from pydantic_ai import Agent
 from mcp.server.fastmcp import FastMCP
@@ -166,17 +167,14 @@ def copr_enable_repository(ownername: str, projectname: str) -> str:
     )
 
 
-def run_mcp(args):
+def run_mcp(tools: list[Callable], args):
     mcp = FastMCP("copr")
-    mcp.add_tool(copr_build_status)
-    mcp.add_tool(copr_list_builds)
-    mcp.add_tool(copr_create_project)
-    mcp.add_tool(copr_submit_build)
-    mcp.add_tool(copr_enable_repository)
+    for tool in tools:
+        mcp.add_tool(tool)
     mcp.run()
 
 
-def run_prompt(args):
+def run_prompt(tools: list[Callable], args):
     instructions = (
         "You help manage Copr builds. Use tools to get real information.",
     )
@@ -184,12 +182,8 @@ def run_prompt(args):
         "anthropic:claude-opus-4-6",
         instructions=instructions,
     )
-    agent.tool_plain(copr_build_status)
-    agent.tool_plain(copr_list_builds)
-    agent.tool_plain(copr_create_project)
-    agent.tool_plain(copr_submit_build)
-    agent.tool_plain(copr_enable_repository)
-
+    for tool in tools:
+        agent.tool_plain(tool)
     result = agent.run_sync(args.prompt)
     print(result.output)
 
@@ -201,11 +195,17 @@ def main():
         help="Don't run MCP and send a prompt directly",
     )
     args = parser.parse_args()
-
+    tools = [
+        copr_build_status,
+        copr_list_builds,
+        copr_create_project,
+        copr_submit_build,
+        copr_enable_repository,
+    ]
     if args.prompt:
-        run_prompt(args)
+        run_prompt(tools, args)
     else:
-        run_mcp(args)
+        run_mcp(tools, args)
 
 
 if __name__ == "__main__":
