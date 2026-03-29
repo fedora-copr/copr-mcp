@@ -14,8 +14,8 @@ uv sync
 Register the MCP server
 
 ```
-claude mcp add copr-mcp \
-    -- uv run --directory /home/jkadlcik/git/copr-mcp python main.py --mcp
+claude mcp add copr --scope user \
+    -- uv run --directory `pwd` python main.py --mcp
 ```
 
 Then create a new claude session and ask it questions like
@@ -31,7 +31,7 @@ Then create a new claude session and ask it questions like
 If you don't need this MCP server anymore, uninstall it.
 
 ```
-claude mcp remove copr-mcp
+claude mcp remove copr
 ```
 
 
