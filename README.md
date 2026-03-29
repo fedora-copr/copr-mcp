@@ -35,7 +35,12 @@ claude mcp add copr-mcp \
 Then create a new claude session and ask it questions like
 
 > Tell me the status of Copr build 8101723
+
 > Can you give me last 5 builds from the frostyx/foo Copr project?
+
+> Build the DistGit package hello in my frostyx/foo project
+
+> Create a Copr project frostyx/foo with a fedora-43-x86_64 chroot
 
 If you don't need this MCP server anymore, uninstall it.
 
