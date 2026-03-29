@@ -49,3 +49,11 @@ Then run
 ```
 uv run main.py --prompt "Tell me the status of Copr build 8101723"
 ```
+
+## Tests
+
+```
+uv run mypy .
+uv run ruff check
+uv run pytest
+```
