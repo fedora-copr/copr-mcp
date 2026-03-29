@@ -153,12 +153,26 @@ def copr_submit_build(
     )
 
 
+def copr_enable_repository(ownername: str, projectname: str) -> str:
+    """
+    Provide instructions for enabling a Copr repository on the user system.
+    This requires root privileges and must be run manually by the user.
+    """
+    return (
+        f"This action requires root privileges and therefore requires a manual"
+        f"step from the user.\n"
+        f"To enable this Copr repository run the following command:\n\n"
+        f"    sudo dnf copr enable {ownername}/{projectname}"
+    )
+
+
 def run_mcp(args):
     mcp = FastMCP("copr")
     mcp.add_tool(copr_build_status)
     mcp.add_tool(copr_list_builds)
     mcp.add_tool(copr_create_project)
     mcp.add_tool(copr_submit_build)
+    mcp.add_tool(copr_enable_repository)
     mcp.run()
 
 
@@ -174,6 +188,7 @@ def run_prompt(args):
     agent.tool_plain(copr_list_builds)
     agent.tool_plain(copr_create_project)
     agent.tool_plain(copr_submit_build)
+    agent.tool_plain(copr_enable_repository)
 
     result = agent.run_sync(args.prompt)
     print(result.output)
