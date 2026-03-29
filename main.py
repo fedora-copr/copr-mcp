@@ -55,6 +55,7 @@ def copr_create_project(
     When creating a new project, at least one chroot must be specified. For
     example `fedora-rawhide-x86_64`
     """
+    log.debug("copr_create_project: %s/%s", ownername, projectname)
     client = Client.create_from_config_file()
     project = client.project_proxy.add(ownername, projectname, chroots)
 
@@ -79,6 +80,7 @@ def copr_build_status(build_id: int) -> BuildStatus:
     """
     Get the status of a Copr build by its ID.
     """
+    log.debug("copr_build_status: %s", build_id)
     client = Client.create_from_config_file()
     build = client.build_proxy.get(build_id)
     return BuildStatus(
@@ -92,6 +94,7 @@ def copr_list_builds(ownername: str, projectname: str) -> list[BuildStatus]:
     Get the status of all builds in a Copr project identified by its
     ownername/projectname.
     """
+    log.debug("copr_list_builds: %s/%s", ownername, projectname)
     client = Client.create_from_config_file()
     builds = client.build_proxy.get_list(ownername, projectname)
     return [
@@ -114,6 +117,10 @@ def copr_submit_build(
     projectname. Copr supports multiple source types, see the documentation
     https://docs.copr.fedorainfracloud.org/user_documentation.html#build-source-types
     """
+    log.debug(
+        "copr_submit_build: %s/%s %s",
+        ownername, projectname, source.__class__.__name__,
+    )
     client = Client.create_from_config_file()
     match source:
         case BuildFromDistGit():
