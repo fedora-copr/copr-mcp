@@ -181,15 +181,9 @@ def run_prompt(args):
 
 def main():
     parser = argparse.ArgumentParser(description="Copr AI assistant")
-    group = parser.add_mutually_exclusive_group(required=True)
-    group.add_argument(
-        "--mcp",
-        action="store_true",
-        help="Run as MCP server",
-    )
-    group.add_argument(
+    parser.add_argument(
         "--prompt",
-        help="Run as interactive CLI",
+        help="Don't run MCP and send a prompt directly",
     )
     args = parser.parse_args()
 

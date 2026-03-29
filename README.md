@@ -15,7 +15,7 @@ Register the MCP server
 
 ```
 claude mcp add copr --scope user \
-    -- uv run --directory `pwd` python main.py --mcp
+    -- uv run --directory `pwd` python main.py
 ```
 
 Then create a new claude session and ask it questions like
