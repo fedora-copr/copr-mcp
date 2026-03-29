@@ -8,20 +8,6 @@ Install dependencies
 uv sync
 ```
 
-## Interactive Usage
-
-Go to <https://console.anthropic.com>, "API Keys" and generate a new key. Then
-export it in your terminal:
-
-```
-export ANTHROPIC_API_KEY=...
-```
-
-Then run
-
-```
-uv run main.py --prompt "Tell me the status of Copr build 8101723"
-```
 
 ## MCP Usage
 
@@ -46,4 +32,20 @@ If you don't need this MCP server anymore, uninstall it.
 
 ```
 claude mcp remove copr-mcp
+```
+
+
+## Development
+
+Go to <https://console.anthropic.com>, "API Keys" and generate a new key. Then
+export it in your terminal:
+
+```
+export ANTHROPIC_API_KEY=...
+```
+
+Then run
+
+```
+uv run main.py --prompt "Tell me the status of Copr build 8101723"
 ```
