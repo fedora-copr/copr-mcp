@@ -1,7 +1,7 @@
 import argparse
 import logging
-from typing import Callable
-from pydantic import BaseModel
+from typing import Callable, Literal, Annotated
+from pydantic import BaseModel, Field
 from pydantic_ai import Agent
 from mcp.server.fastmcp import FastMCP
 from copr.v3 import Client
@@ -33,6 +33,7 @@ class BuildFromDistGit(BaseModel):
     Use this schema when you want to build a package Fedora or any other
     DistGit instance
     """
+    source_type: Literal["distgit"] = "distgit"
     packagename: str
     namespace: str | None = None
 
@@ -41,11 +42,18 @@ class BuildFromPyPI(BaseModel):
     """
     Use this schema when you want to build a package from PyPI
     """
+    source_type: Literal["pypi"] = "pypi"
     packagename: str
     spec_template: str | None = None
 
 
-BuildSource = BuildFromDistGit | BuildFromPyPI
+# We need to annotate this with a discriminator otherwise AI sometimes doesn't
+# know what type to use and therefore uses the first one.
+# class to use
+BuildSource = Annotated[
+    BuildFromDistGit | BuildFromPyPI,
+    Field(discriminator="source_type"),
+]
 
 
 logging.basicConfig(level=logging.WARNING)
