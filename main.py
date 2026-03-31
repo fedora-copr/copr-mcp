@@ -29,11 +29,18 @@ class Build(BaseModel):
 
 
 class BuildFromDistGit(BaseModel):
+    """
+    Use this schema when you want to build a package Fedora or any other
+    DistGit instance
+    """
     packagename: str
     namespace: str | None = None
 
 
 class BuildFromPyPI(BaseModel):
+    """
+    Use this schema when you want to build a package from PyPI
+    """
     packagename: str
     spec_template: str | None = None
 
