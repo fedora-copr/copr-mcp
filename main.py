@@ -210,12 +210,16 @@ def main():
         help="Don't run MCP and send a prompt directly",
     )
     args = parser.parse_args()
+    client = Client.create_from_config_file()
     tools = [
         copr_build_status,
         copr_list_builds,
         copr_create_project,
         copr_submit_build,
         copr_enable_repository,
+        # We probably don't have to implement wrappers around every python-copr
+        # function. We can simply register the client methods like this.
+        client.base_proxy.auth_check,
     ]
     if args.prompt:
         run_prompt(tools, args)
