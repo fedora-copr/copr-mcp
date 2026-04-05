@@ -57,3 +57,15 @@ uv run mypy .
 uv run ruff check
 uv run pytest
 ```
+
+## Copr OpenAPI
+
+Generate schema from Copr API
+
+```
+npx swagger2openapi https://copr.fedorainfracloud.org/api_3/swagger.json -o openapi3.json
+uvx --with httpx --from datamodel-code-generator datamodel-codegen \
+  --input openapi3.json \
+  --input-file-type openapi \
+  --output copr_models.py
+```
