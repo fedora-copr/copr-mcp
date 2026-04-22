@@ -182,6 +182,31 @@ def copr_enable_repository(ownername: str, projectname: str) -> str:
     )
 
 
+def copr_list_mock_chroots() -> list[str]:
+    """
+    Get a list of all mock chroots that you can create or use in copr. The
+    response copr will give may vary over time, i.e. when a new Fedora or RHEL
+    version is released.
+    """
+    log.debug("copr_list_mock_chroots")
+    client = Client.create_from_config_file()
+    return list(client.mock_chroot_proxy.get_list().keys())
+
+
+def copr_list_mock_chroots_for_project(ownername: str, projectname:str) -> list[str] | None: 
+    """
+    Get a list of all mock chroots that are configured for a given copr project
+    or nothing if the project could not be found. The response may vary over
+    time, depending on if chroots where added or removed from the copr project.
+    """
+    log.debug("copr_list_mock_chroots_for_project: %s/%s", ownername, projectname)
+    client = Client.create_from_config_file()
+    project = client.project_proxy.get(ownername=ownername, projectname=projectname)
+    if project is None or 'chroot_repos' not in project:
+        return None
+    return list(project['chroot_repos'].keys())
+
+
 def run_mcp(tools: list[Callable], args):
     mcp = FastMCP("copr")
     for tool in tools:
@@ -217,6 +242,8 @@ def main():
         copr_create_project,
         copr_submit_build,
         copr_enable_repository,
+        copr_list_mock_chroots,
+        copr_list_mock_chroots_for_project,
         # We probably don't have to implement wrappers around every python-copr
         # function. We can simply register the client methods like this.
         client.base_proxy.auth_check,
