@@ -1,5 +1,13 @@
 # Copr MCP
 
+# Demo
+
+Please see the [First look at the Copr MCP server](https://www.youtube.com/watch?v=3gYktJT-Cr0).
+
+[![Demo](https://i1.ytimg.com/vi/3gYktJT-Cr0/maxresdefault.jpg)](https://www.youtube.com/watch?v=3gYktJT-Cr0)
+
+
+
 ## Prerequisites
 
 Install dependencies
