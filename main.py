@@ -1,18 +1,16 @@
 import argparse
 import logging
+from munch import Munch
 from typing import Callable, Literal, Annotated
 from pydantic import BaseModel, Field
 from pydantic_ai import Agent
 from mcp.server.fastmcp import FastMCP
 from copr.v3 import Client
+import copr_models
 
 
-class Project(BaseModel):
-    id: int
+class Project(copr_models.Project):
     web_url: str
-    ownername: str
-    name: str
-    full_name: str
 
 
 class BuildStatus(BaseModel):
@@ -21,11 +19,8 @@ class BuildStatus(BaseModel):
     name: str | None = None
 
 
-class Build(BaseModel):
-    id: int
+class Build(copr_models.Build):
     web_url: str
-    state: str
-    submitter: str
 
 
 class BuildFromDistGit(BaseModel):
@@ -61,6 +56,43 @@ log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
 
 
+def web_url(client: Client, data: Munch) -> str:
+    """
+    This should be either part of python-copr or returned by the API
+    """
+    match data.__proxy__.__class__.__name__:
+        case "ProjectProxy":
+            project = data
+            # Taken from copr-cli action_create
+            owner_part = project.ownername.replace("@", "g/")
+            return "/".join([
+                client.config["copr_url"].strip("/"),
+                "coprs", owner_part, project.name, "",
+            ])
+        case "BuildProxy":
+            build = data
+            return "/".join([
+                client.config["copr_url"].strip("/"),
+                "coprs/build",
+                str(build.id),
+            ])
+    raise ValueError("Don't know the web URL for this input data")
+
+
+def copr_get_project(
+    ownername: str,
+    projectname: str,
+) -> Project:
+    """
+    Get information about Copr project with a given ownername/projectname
+    """
+    log.debug("copr_get_project: %s/%s", ownername, projectname)
+    client = Client.create_from_config_file()
+    project = client.project_proxy.get(ownername, projectname)
+    project.web_url = web_url(client, project)
+    return Project.model_validate(project)
+
+
 def copr_create_project(
     ownername: str,
     projectname: str,
@@ -74,22 +106,8 @@ def copr_create_project(
     log.debug("copr_create_project: %s/%s", ownername, projectname)
     client = Client.create_from_config_file()
     project = client.project_proxy.add(ownername, projectname, chroots)
-
-    # Taken from copr-cli action_create
-    # This should be either part of python-copr or returned by the API
-    owner_part = project.ownername.replace("@", "g/")
-    web_url = "/".join([
-        client.config["copr_url"].strip("/"),
-        "coprs", owner_part, project.name, "",
-    ])
-
-    return Project(
-        id=project.id,
-        web_url=web_url,
-        ownername=project.ownername,
-        name=project.name,
-        full_name=project.full_name,
-    )
+    project.web_url = web_url(client, project)
+    return Project.model_validate(project)
 
 
 def copr_build_status(build_id: int) -> BuildStatus:
@@ -155,18 +173,8 @@ def copr_submit_build(
                 spec_template=source.spec_template,
             )
 
-    web_url = "/".join([
-        client.config["copr_url"].strip("/"),
-        "coprs/build",
-        str(build.id),
-    ])
-
-    return Build(
-        id=build.id,
-        web_url=web_url,
-        state=build.state,
-        submitter=build.submitter,
-    )
+    build.web_url = web_url(client, build)
+    return Build.model_validate(build)
 
 
 def copr_enable_repository(ownername: str, projectname: str) -> str:
@@ -239,6 +247,7 @@ def main():
     tools = [
         copr_build_status,
         copr_list_builds,
+        copr_get_project,
         copr_create_project,
         copr_submit_build,
         copr_enable_repository,
