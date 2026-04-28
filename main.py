@@ -219,7 +219,7 @@ def run_prompt(tools: list[Callable], args):
         "You help manage Copr builds. Use tools to get real information.",
     )
     agent = Agent(
-        "anthropic:claude-opus-4-6",
+        args.model,
         instructions=instructions,
     )
     for tool in tools:
@@ -233,6 +233,13 @@ def main():
     parser.add_argument(
         "--prompt",
         help="Don't run MCP and send a prompt directly",
+    )
+    parser.add_argument(
+        "--model",
+        default="anthropic:claude-opus-4-6",
+        help=(
+            "Enter the model name, defaults to claude-opus-4-6",
+        ),
     )
     args = parser.parse_args()
     client = Client.create_from_config_file()

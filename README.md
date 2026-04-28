@@ -58,6 +58,14 @@ Then run
 uv run main.py --prompt "Tell me the status of Copr build 8101723"
 ```
 
+To use a different model pass `--model`
+
+```
+uv run main.py --model gpt-5-mini --prompt "Tell me the status of Copr build 8101723"
+```
+
+Full list of models can be found here: https://pydantic.dev/docs/ai/api/models/base/#pydantic_ai.models.KnownModelName
+
 ## Tests
 
 ```
