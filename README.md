@@ -19,9 +19,9 @@ uv sync
 
 ## MCP Usage
 
-Register the MCP server with either Claude Code, Codex, or Cursor.
+Register the MCP server with Claude Code, Codex, Cursor, or any other agent.
 
-### Register MCP server with Claude Code
+### Claude Code
 
 To register the `copr` server with Claude Code, execute this command
 
@@ -36,7 +36,7 @@ If you don't need this MCP server anymore, uninstall it.
 $ claude mcp remove copr
 ```
 
-### Register MCP server with Codex
+### Codex
 
 ```console
 $ codex mcp add copr -- uv run --directory "$(pwd)" python main.py
@@ -48,7 +48,7 @@ If you don't need this MCP server anymore, uninstall it.
 $ codex mcp remove copr
 ```
 
-### Register MCP server with Cursor 
+### Cursor 
 
 If you use Cursor, open or create `~/.cursor/mcp.json` and add the `copr`
 entry to the list of `mcpServers`.
@@ -72,6 +72,10 @@ Change the directory (`~/src/copr-mcp`) to wherever you've cloned this
   }
 }
 ```
+
+If you don't need this MCP server anymore, removing the `copr`
+entry from the `mcpServers` list in `~/.cursor/mcp.json`.
+
 
 ### Run tools
 
