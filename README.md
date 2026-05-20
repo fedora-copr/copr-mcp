@@ -27,7 +27,7 @@ To register the `copr` server with Claude Code, execute this command
 
 ```console
 $ claude mcp add copr --scope user \
-    -- uv run --directory `pwd` python main.py
+    -- uv run --directory "$(pwd)" python main.py
 ```
 
 If you don't need this MCP server anymore, uninstall it.
