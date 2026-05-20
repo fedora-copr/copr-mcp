@@ -19,6 +19,8 @@ uv sync
 
 ## MCP Usage
 
+### Claude
+
 Register the MCP server
 
 ```
@@ -42,6 +44,13 @@ If you don't need this MCP server anymore, uninstall it.
 claude mcp remove copr
 ```
 
+### Codex
+
+```
+codex mcp add copr -- uv run --directory "$(pwd)" python main.py
+...
+codex mcp remove copr
+```
 
 ## Development
 
