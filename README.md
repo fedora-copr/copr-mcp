@@ -12,23 +12,71 @@ Please see the [First look at the Copr MCP server](https://www.youtube.com/watch
 
 Install dependencies
 
-```
+```console
 uv sync
 ```
 
 
 ## MCP Usage
 
-### Claude
+Register the MCP server with either Claude Code, Codex, or Cursor.
 
-Register the MCP server
+### Register MCP server with Claude Code
 
-```
-claude mcp add copr --scope user \
+To register the `copr` server with Claude Code, execute this command
+
+```console
+$ claude mcp add copr --scope user \
     -- uv run --directory `pwd` python main.py
 ```
 
-Then create a new claude session and ask it questions like
+If you don't need this MCP server anymore, uninstall it.
+
+```console
+$ claude mcp remove copr
+```
+
+### Register MCP server with Codex
+
+```console
+$ codex mcp add copr -- uv run --directory "$(pwd)" python main.py
+```
+
+If you don't need this MCP server anymore, uninstall it.
+
+```console
+$ codex mcp remove copr
+```
+
+### Register MCP server with Cursor 
+
+If you use Cursor, open or create `~/.cursor/mcp.json` and add the `copr`
+entry to the list of `mcpServers`.
+
+Change the directory (`~/src/copr-mcp`) to wherever you've cloned this
+`copr-mcp` project.
+
+```yaml
+{
+  "mcpServers": {
+    "copr": {
+      "command": "uv",
+      "args": [
+        "run",
+        "--directory",
+        "~/src/copr-mcp",
+        "python",
+        "main.py"
+      ]
+    }
+  }
+}
+```
+
+### Run tools
+
+Once the MCP server is registered, go to i.e. Claude or Cursor and ask it
+questions like
 
 > Tell me the status of Copr build 8101723
 
@@ -38,47 +86,34 @@ Then create a new claude session and ask it questions like
 
 > Create a Copr project frostyx/foo with a fedora-43-x86_64 chroot
 
-If you don't need this MCP server anymore, uninstall it.
-
-```
-claude mcp remove copr
-```
-
-### Codex
-
-```
-codex mcp add copr -- uv run --directory "$(pwd)" python main.py
-...
-codex mcp remove copr
-```
 
 ## Development
 
 Go to <https://console.anthropic.com>, "API Keys" and generate a new key. Then
 export it in your terminal:
 
-```
-export ANTHROPIC_API_KEY=...
+```console
+$ export ANTHROPIC_API_KEY=...
 ```
 
 Then run
 
-```
-uv run main.py --prompt "Tell me the status of Copr build 8101723"
+```console
+$ uv run main.py --prompt "Tell me the status of Copr build 8101723"
 ```
 
 To use a different model pass `--model`
 
-```
-uv run main.py --model gpt-5-mini --prompt "Tell me the status of Copr build 8101723"
+```console
+$ uv run main.py --model gpt-5-mini --prompt "Tell me the status of Copr build 8101723"
 ```
 
 Full list of models can be found here: https://pydantic.dev/docs/ai/api/models/base/#pydantic_ai.models.KnownModelName
 
 ## Tests
 
-```
-uv run mypy .
-uv run ruff check
-uv run pytest
+```console
+$ uv run mypy .
+$ uv run ruff check
+$ uv run pytest
 ```
