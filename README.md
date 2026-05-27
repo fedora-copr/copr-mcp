@@ -76,6 +76,49 @@ Change the directory (`~/src/copr-mcp`) to wherever you've cloned this
 If you don't need this MCP server anymore, removing the `copr`
 entry from the `mcpServers` list in `~/.cursor/mcp.json`.
 
+### Visual Studio Code
+
+Open the Command Palette in VSCode by pressing
+<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd>. Then type `>MCP: Open User
+Configuration`. The file `mcp.json` that opens should look something like this:
+
+```yaml
+{
+	"servers": {}
+}
+```
+
+Add the copr MCP server like so:
+
+```yaml
+{
+  "servers": {
+    "copr": {
+      "type": "local",
+      "command": "uvx",
+      "args": ["--from", "git+https://github.com/fedora-copr/copr-mcp@main", "--verbose", "copr-mcp-server"]
+    }
+  }
+}
+```
+
+Save the file (`~/.config/Code/mcp.json`) and start the server by hitting the
+little "Save" link that appears right above the line with `"copr": {`.
+
+Test the server by opening the Chat view with
+<kbd>Ctrl</kbd>+<kbd>Alt<kbd>+</kbd>I</kbd>. Then type the following and press
+<kbd>Enter</kbd>:
+
+```
+Use copr_list_mock_chroots from the copr MCP server and list all supported mock chroots.
+```
+
+You should see a `Run copr_list_mock_chroots copr (MCP Server)` followed by some
+text and a button that says `Allow in this Session`.
+
+If you don't need this MCP server anymore, remove the `copr` entry from the
+`servers` list in the `MCP: Open User Configuration`
+(`~/.config/Code/mcp.json`).
 
 ### Run tools
 

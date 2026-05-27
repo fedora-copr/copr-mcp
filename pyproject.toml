@@ -19,3 +19,6 @@ dev = [
     "pytest>=8.0",
     "ruff>=0.1",
 ]
+
+[project.scripts]
+copr-mcp-server = "main:main"
