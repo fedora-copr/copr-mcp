@@ -106,7 +106,7 @@ Save the file (`~/.config/Code/mcp.json`) and start the server by hitting the
 little "Save" link that appears right above the line with `"copr": {`.
 
 Test the server by opening the Chat view with
-<kbd>Ctrl</kbd>+<kbd>Alt<kbd>+</kbd>I</kbd>. Then type the following and press
+<kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>I</kbd>. Then type the following and press
 <kbd>Enter</kbd>:
 
 ```
