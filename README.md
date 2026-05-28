@@ -56,7 +56,7 @@ entry to the list of `mcpServers`.
 Change the directory (`~/src/copr-mcp`) to wherever you've cloned this
 `copr-mcp` project.
 
-```yaml
+```json
 {
   "mcpServers": {
     "copr": {
@@ -82,7 +82,7 @@ Open the Command Palette in VSCode by pressing
 <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd>. Then type `>MCP: Open User
 Configuration`. The file `mcp.json` that opens should look something like this:
 
-```yaml
+```json
 {
 	"servers": {}
 }
@@ -90,7 +90,7 @@ Configuration`. The file `mcp.json` that opens should look something like this:
 
 Add the copr MCP server like so:
 
-```yaml
+```json
 {
   "servers": {
     "copr": {
